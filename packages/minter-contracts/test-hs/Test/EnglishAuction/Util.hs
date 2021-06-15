@@ -9,8 +9,8 @@ module Test.EnglishAuction.Util
   , originateAuctionTezPermitAllowlistedToken
   ) where
 
+import Lorentz.Contracts.MinterSdk
 import Lorentz.Value
-import qualified Michelson.Typed as T
 import Morley.Nettest
 
 import Lorentz.Contracts.AllowlistSimple as AllowlistSimple
@@ -24,70 +24,74 @@ originateAuctionFA2Allowlisted
   :: MonadNettest caps base m
   => AuctionFA2.BidCurrency
   -> Address
-  -> m (TAddress $ AuctionFA2.AuctionEntrypoints AllowlistSimple.Entrypoints)
+  -> m $ ContractHandler
+       (AuctionFA2.AuctionEntrypoints AllowlistSimple.Entrypoints)
+       (AuctionFA2.AuctionStorage AllowlistSimple.Allowlist)
 originateAuctionFA2Allowlisted bidCurrency admin = do
-  TAddress <$> originateUntypedSimple "auction-fa2"
-    (T.untypeValue $ T.toVal $
-      AuctionFA2.initAuctionStorage @AllowlistSimple.Allowlist
-        (PausableAdminOption.initAdminStorage admin)
-        bidCurrency
+  originateSimple "auction-fa2"
+    (AuctionFA2.initAuctionStorage
+      (PausableAdminOption.initAdminStorage admin)
+      bidCurrency
     )
-    (T.convertContract AuctionFA2.auctionFA2AllowlistedContract)
+    =<< importContract (inBinFolder "english_auction_fa2_allowlisted.tz")
 
 originateAuctionFA2AllowlistedToken
   :: MonadNettest caps base m
   => AuctionFA2.BidCurrency
   -> Address
-  -> m (TAddress $ AuctionFA2.AuctionEntrypoints AllowlistToken.Entrypoints)
+  -> m $ ContractHandler
+        (AuctionFA2.AuctionEntrypoints AllowlistToken.Entrypoints)
+        (AuctionFA2.AuctionStorage AllowlistToken.Allowlist)
 originateAuctionFA2AllowlistedToken bidCurrency admin = do
-  TAddress <$> originateUntypedSimple "auction-fa2"
-    (T.untypeValue $ T.toVal $
-      AuctionFA2.initAuctionStorage @AllowlistToken.Allowlist
-        (PausableAdminOption.initAdminStorage admin)
-        bidCurrency
+  originateSimple "auction-fa2"
+    (AuctionFA2.initAuctionStorage
+      (PausableAdminOption.initAdminStorage admin)
+      bidCurrency
     )
-    (T.convertContract AuctionFA2.auctionFA2AllowlistedTokenContract)
+    =<< importContract (inBinFolder "english_auction_fa2_allowlisted_token.tz")
 
 originateAuctionTezAllowlisted
   :: MonadNettest caps base m
   => Address
-  -> m (TAddress $ AuctionTez.AuctionEntrypoints AllowlistSimple.Entrypoints)
+  -> m $ ContractHandler
+        (AuctionTez.AuctionEntrypoints AllowlistSimple.Entrypoints)
+        (AuctionTez.AuctionStorage AllowlistSimple.Allowlist)
 originateAuctionTezAllowlisted admin = do
-  TAddress <$> originateUntypedSimple "auction-tez"
-    (T.untypeValue $ T.toVal $
-      AuctionTez.initAuctionStorage @AllowlistSimple.Allowlist
-        (PausableAdminOption.initAdminStorage admin))
-    (T.convertContract AuctionTez.auctionTezAllowlistedContract)
+  originateSimple "auction-tez"
+    (AuctionTez.initAuctionStorage (PausableAdminOption.initAdminStorage admin))
+    =<< importContract (inBinFolder "english_auction_tez_allowlisted.tz")
 
 originateAuctionTezAllowlistedToken
   :: MonadNettest caps base m
   => Address
-  -> m (TAddress $ AuctionTez.AuctionEntrypoints AllowlistToken.Entrypoints)
+  -> m $ ContractHandler
+        (AuctionTez.AuctionEntrypoints AllowlistToken.Entrypoints)
+        (AuctionTez.AuctionStorage AllowlistToken.Allowlist)
 originateAuctionTezAllowlistedToken admin = do
-  TAddress <$> originateUntypedSimple "auction-tez"
-    (T.untypeValue $ T.toVal $
-      AuctionTez.initAuctionStorage @AllowlistToken.Allowlist
-        (PausableAdminOption.initAdminStorage admin))
-    (T.convertContract AuctionTez.auctionTezAllowlistedTokenContract)
+  originateSimple "auction-tez"
+    (AuctionTez.initAuctionStorage (PausableAdminOption.initAdminStorage admin))
+    =<< importContract (inBinFolder "english_auction_tez_allowlisted_token.tz")
 
 originateAuctionTezPermitAllowlisted
   :: MonadNettest caps base m
   => Address
-  -> m (TAddress $ AuctionPermitTez.PermitAuctionEntrypoints AllowlistSimple.Entrypoints)
+  -> m $ ContractHandler
+        (AuctionPermitTez.PermitAuctionEntrypoints AllowlistSimple.Entrypoints)
+        (AuctionPermitTez.PermitAuctionStorage AllowlistSimple.Allowlist)
 originateAuctionTezPermitAllowlisted admin = do
-  TAddress <$> originateUntypedSimple "auction-permit-tez"
-    (T.untypeValue $ T.toVal $
-      AuctionPermitTez.initPermitAuctionStorage @AllowlistSimple.Allowlist
-        (PausableAdminOption.initAdminStorage admin))
-    (T.convertContract AuctionPermitTez.auctionTezPermitAllowlistedContract)
+  originateSimple "auction-permit-tez"
+    (AuctionPermitTez.initPermitAuctionStorage
+       (PausableAdminOption.initAdminStorage admin))
+    =<< importContract (inBinFolder "english_auction_tez_permit_allowlisted.tz")
 
 originateAuctionTezPermitAllowlistedToken
   :: MonadNettest caps base m
   => Address
-  -> m (TAddress $ AuctionPermitTez.PermitAuctionEntrypoints AllowlistToken.Entrypoints)
+  -> m $ ContractHandler
+        (AuctionPermitTez.PermitAuctionEntrypoints AllowlistToken.Entrypoints)
+        (AuctionPermitTez.PermitAuctionStorage AllowlistToken.Allowlist)
 originateAuctionTezPermitAllowlistedToken admin = do
-  TAddress <$> originateUntypedSimple "auction-permit-tez"
-    (T.untypeValue $ T.toVal $
-      AuctionPermitTez.initPermitAuctionStorage @AllowlistToken.Allowlist
-        (PausableAdminOption.initAdminStorage admin))
-    (T.convertContract AuctionPermitTez.auctionTezPermitAllowlistedTokenContract)
+  originateSimple "auction-permit-tez"
+    (AuctionPermitTez.initPermitAuctionStorage
+      (PausableAdminOption.initAdminStorage admin))
+    =<< importContract (inBinFolder "english_auction_tez_permit_allowlisted_token.tz")

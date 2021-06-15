@@ -9,6 +9,7 @@ module Lorentz.Contracts.MinterSdk
   ) where
 
 import Fmt (Buildable(..), genericF)
+import GHC.IO.Unsafe (unsafePerformIO)
 import Lorentz
 import System.Environment (lookupEnv)
 import System.FilePath ((</>))
@@ -31,12 +32,11 @@ instance Buildable FeeData where build = genericF
 -- Helpers
 ----------------------------------------------------------------------------
 
-getBinFolder :: IO FilePath
-getBinFolder = do
+binFolder :: FilePath
+binFolder = unsafePerformIO do
   mpath <- lookupEnv "TZ_BIN_PATH"
   return (mpath ?: "bin")
+{-# NOINLINE binFolder #-}
 
-inBinFolder :: FilePath -> IO FilePath
-inBinFolder file = do
-  binFolder <- getBinFolder
-  return (binFolder </> file)
+inBinFolder :: FilePath -> FilePath
+inBinFolder file = binFolder </> file
